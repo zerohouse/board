@@ -1,5 +1,5 @@
 {
-  "basePackage": "board
+  "basePackage": "board",
   "connectionSetting": {
     "minConnectionsPerPartition": 3,
     "maxConnectionsPerPartition": 10,

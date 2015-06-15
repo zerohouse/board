@@ -1,4 +1,4 @@
-package begin.launcher;
+package board;
 
 import next.jdbc.mysql.maker.PackageCreator;
 

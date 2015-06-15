@@ -1,4 +1,4 @@
-package begin.launcher;
+package board;
 
 import java.io.File;
 
