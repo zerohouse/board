@@ -1,0 +1,11 @@
+<div ng-show="!article.mod">
+    <h3>{{article.head}}</h3>{{article.body}}
+    <div ng-click="modify()">수정</div>
+</div>
+<div ng-show="article.mod">
+    <input ng-model="article.head">
+    <input ng-model="article.body">
+
+    <div ng-click="done()">완료</div>
+</div>
+<div ng-click="article.remove()">삭제</div>

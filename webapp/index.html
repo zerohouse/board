@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head lang="ko">
+    <meta charset="UTF-8">
+    <title>board</title>
+    <link rel="stylesheet" href="css/css.css">
+</head>
+<body ng-app="board">
+<div ng-controller="loginController">
+    <input type="user.email" ng-model="user.email"/>
+    <input type="user.password" ng-model="user.password"/>
+
+    <div ng-click="login()">로그인</div>
+    <div ng-click="register()">회원가입</div>
+</div>
+
+
+<div ng-controller="boardController">
+    <ul>
+        <li ng-repeat="article in article.list" article="article"></li>
+    </ul>
+    <ul>
+        <li ng-repeat="page in article.page">{{page.page}}</li>
+    </ul>
+    <div ng-click="article.newArticle()">새글</div>
+</div>
+
+<div ng-controller="imageController">
+    <div>워드 채우기</div>
+    <div id="image"></div>
+</div>
+
+
+<div ng-controller="mainController">
+    <div ng-view></div>
+</div>
+<script src="node_modules/angular/angular.min.js"></script>
+<script src="node_modules/angular-route/angular-route.min.js"></script>
+<script src="js/js.js"></script>
+</body>
+</html>
