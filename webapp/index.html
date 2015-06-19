@@ -3,39 +3,39 @@
 <head lang="ko">
     <meta charset="UTF-8">
     <title>board</title>
-    <link rel="stylesheet" href="css/css.css">
+    <link rel="stylesheet" href="/css/css.css">
 </head>
 <body ng-app="board">
 <div ng-controller="loginController">
-    <input type="user.email" ng-model="user.email"/>
-    <input type="user.password" ng-model="user.password"/>
+    <div ng-show="!user.logged">
+        <input type="text" ng-model="user.email"/>
+        <input type="password" ng-model="user.password" />
 
-    <div ng-click="login()">로그인</div>
-    <div ng-click="register()">회원가입</div>
+        <div ng-click="login()">로그인</div>
+        <div ng-click="register()">회원가입</div>
+    </div>
+    <div ng-show="user.logged">
+        {{user.email}}
+        <div ng-click="logout()">로그아웃</div>
+    </div>
 </div>
 
 
 <div ng-controller="boardController">
+    <h1>{{subject}}</h1>
     <ul>
-        <li ng-repeat="article in article.list" article="article"></li>
+        <li ng-repeat="title in titles" title="title"></li>
     </ul>
-    <ul>
-        <li ng-repeat="page in article.page">{{page.page}}</li>
-    </ul>
-    <div ng-click="article.newArticle()">새글</div>
-</div>
-
-<div ng-controller="imageController">
-    <div>워드 채우기</div>
-    <div id="image"></div>
+    <article></article>
+    <new-article titles='titles'></new-article>
 </div>
 
 
 <div ng-controller="mainController">
     <div ng-view></div>
 </div>
-<script src="node_modules/angular/angular.min.js"></script>
-<script src="node_modules/angular-route/angular-route.min.js"></script>
-<script src="js/js.js"></script>
+<script src="/node_modules/angular/angular.min.js"></script>
+<script src="/node_modules/angular-route/angular-route.min.js"></script>
+<script src="/js/js.js"></script>
 </body>
 </html>

@@ -16,49 +16,112 @@ Array.prototype.contains = function (obj) {
 
 var app = angular.module('board', ['ngRoute'])
 
-    .controller('mainController', function ($scope, $route, $routeParams, $location) {
+    .controller('mainController', function ($scope, $route, $routeParams, $location, $timeout) {
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
+    })
+    .config(function ($routeProvider, $locationProvider) {
+        $routeProvider
+            .when('/:subject', {})
+            .when('/:subject/:articleId', {});
+
+        // configure html5 to get links working on jsfiddle
+        $locationProvider.html5Mode({
+            enabled: true,
+            requireBase: false
+        });
     });
 
-//.service(function ($routeProvider, $locationProvider) {
-//    $routeProvider
-//        .when('/ng-board/article/:articleId', {
-//            templateUrl: 'html/article.html',
-//            controller: 'articleController',
-//            resolve: {
-//                // I will cause a 1 second delay
-//                delay: function ($q, $timeout) {
-//                    var delay = $q.defer();
-//                    $timeout(delay.resolve, 1000);
-//                    return delay.promise;
-//                }
-//            }
-//        });
-//
-//    $locationProvider.html5Mode(true);
-//});
+app.findScope = function (selector) {
+    return angular.element(document.querySelector(selector)).scope();
+};
+
 
 app.directive('article', function () {
-
     return {
-        templateUrl: 'js/directive/articleTemplate.html',
-        restrict: 'A',
-        scope: {
-            article: '='
-        },
-        controller: function ($scope) {
+        templateUrl: '/js/directive/article.html',
+        restrict: 'E',
+        scope: {},
+        controller: function ($scope, $req, $routeParams, $user) {
 
-            $scope.modify = function () {
-                $scope.article.mod = true;
+            $scope.delete = function () {
+                $req("/api/post", {id: $routeParams.articleId}, "DELETE").success(function (response) {
+                    if (!response)
+                        return;
+                    app.findScope("[ng-controller='boardController']").delete($routeParams.articleId);
+                });
             };
-            $scope.done = function () {
-                $scope.article.mod = false;
+
+            $scope.update = function () {
+                $scope.updateState = true;
+            };
+
+            $scope.updateDone = function () {
+                $req("/api/post", $scope.article, "PUT").success(function (response) {
+                    if (!response)
+                        return;
+                    app.findScope("[ng-controller='boardController']").update($scope.article);
+                    $scope.updateState = false;
+                });
+            };
+
+            $scope.hasRight = function () {
+                if ($scope.article == undefined)
+                    return false;
+                return $user.email == $scope.article.writer;
+            };
+
+            $scope.$watch(function () {
+                return $routeParams.articleId;
+            }, function () {
+                $req("/api/post", {id: $routeParams.articleId}).success(function (response) {
+                    $scope.article = response[0];
+                });
+            });
+        }
+    };
+});
+Date.prototype.getString = function () {
+    var yyyy = this.getFullYear().toString();
+    var mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
+    var dd = this.getDate().toString();
+    return yyyy + (mm[1] ? mm : "0" + mm[0]) + (dd[1] ? dd : "0" + dd[0]); // padding
+};
+
+app.directive('newArticle', function () {
+    return {
+        templateUrl: '/js/directive/newArticle.html',
+        restrict: 'E',
+        scope: {
+            titles: '='
+        },
+        controller: function ($scope, $req, $routeParams, $user) {
+            $scope.user = $user;
+            $scope.article = {};
+            $scope.article.subject = $routeParams.subject;
+            $scope.save = function () {
+                $req("/api/post", $scope.article, "POST").success(function (response) {
+                    var article = {};
+                    angular.copy($scope.article, article);
+                    article.date = new Date().getString();
+                    article.writer = $user.email;
+                    $scope.titles.push(article);
+                });
             };
         }
     };
-
+});
+app.directive('title', function () {
+    return {
+        templateUrl: '/js/directive/title.html',
+        restrict: 'A',
+        scope: {
+            title: '='
+        },
+        controller: function ($scope) {
+        }
+    };
 });
 app.factory('$req', function ($http) {
     var req = function (url, data, method) {
@@ -100,53 +163,86 @@ app.factory('$req', function ($http) {
     return req;
 });
 
-app.service('$article', function () {
-    var list = this.list = [];
+app.service('$user', function ($req) {
 
-    function Article(head, body) {
-        this.head = head;
-        this.body = body;
-    }
+    var self = this;
 
-    Article.prototype.equals = function (obj) {
-        if (obj == this)
-            return true;
-        if (obj.id == this.id)
-            return true;
-        return false;
-    };
-
-    Article.prototype.remove = function () {
-        list.splice(list.indexOf(this), 1);
-    };
-
-    this.newArticle = function () {
-        var article = new Article();
-        article.mod = true;
-        list.push(article);
-    };
+    $req("/api/user").success(function (response) {
+        if (response != null) {
+            self.logged = true;
+            self.email = response.email;
+        }
+    });
 
 });
-app.service('userAjax', function ($req) {
-    this.login = function (user) {
-        $req("/api/user/login", user, "POST").success(function (response) {
-            return response;
+
+app.controller('boardController', function ($scope, $req, $routeParams, $timeout) {
+    $timeout(function () {
+        $scope.subject = $routeParams.subject;
+        $req("/api/post", {subject: $routeParams.subject}).success(function (response) {
+            $scope.titles = response;
+
+        });
+    });
+
+    $scope.delete = function (id) {
+        var index = findIndex(id);
+        if (index == undefined)
+            return;
+        $scope.titles.splice(index, 1);
+    };
+
+    $scope.update = function (article) {
+        var index = findIndex(article.id);
+        if (index == undefined)
+            return;
+        var title = $scope.titles[index];
+        title.title = article.title;
+    };
+
+    function findIndex(findId) {
+        for (var i = 0; i < $scope.titles.length; i++) {
+            if ($scope.titles[i].id == findId)
+                return i;
+        }
+    };
+
+
+});
+app.controller('loginController', function ($scope, $req, $user) {
+
+    $scope.user = $user;
+
+    $scope.login = function () {
+        $req("/api/user/login", $user, "POST").success(function (response) {
+            if (response) {
+                alert('로그인 성공!');
+                $user.logged = true;
+                return;
+            }
+            alert('로그인 실패!');
         });
     };
-});
 
-app.controller('boardController', function ($scope, $article) {
-    $scope.article = $article;
+    $scope.logout = function () {
+        $req("/api/user/logout").success(function (response) {
+            if (response) {
+                alert('로그아웃 성공!');
+                $user.logged = false;
+                return;
+            }
+            alert('로그아웃 실패!');
+        });
+    };
 
-});
-app.controller('imageController', function () {
-
-});
-
-app.controller('loginController', function (userAjax, $scope) {
-
-    $scope.user = {};
-
-    userAjax.login($scope.user);
+    $scope.register = function () {
+        $req("/api/user", $user, "POST").success(function (response) {
+            if (response) {
+                alert('회원가입 성공!');
+                return;
+            }
+            alert('회원가입 실패!');
+        });
+    };
 
 });

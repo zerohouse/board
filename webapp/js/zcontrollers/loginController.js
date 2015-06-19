@@ -1,7 +1,37 @@
-app.controller('loginController', function (userAjax, $scope) {
+app.controller('loginController', function ($scope, $req, $user) {
 
-    $scope.user = {};
+    $scope.user = $user;
 
-    userAjax.login($scope.user);
+    $scope.login = function () {
+        $req("/api/user/login", $user, "POST").success(function (response) {
+            if (response) {
+                alert('로그인 성공!');
+                $user.logged = true;
+                return;
+            }
+            alert('로그인 실패!');
+        });
+    };
+
+    $scope.logout = function () {
+        $req("/api/user/logout").success(function (response) {
+            if (response) {
+                alert('로그아웃 성공!');
+                $user.logged = false;
+                return;
+            }
+            alert('로그아웃 실패!');
+        });
+    };
+
+    $scope.register = function () {
+        $req("/api/user", $user, "POST").success(function (response) {
+            if (response) {
+                alert('회원가입 성공!');
+                return;
+            }
+            alert('회원가입 실패!');
+        });
+    };
 
 });

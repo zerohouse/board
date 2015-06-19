@@ -16,26 +16,24 @@ Array.prototype.contains = function (obj) {
 
 var app = angular.module('board', ['ngRoute'])
 
-    .controller('mainController', function ($scope, $route, $routeParams, $location) {
+    .controller('mainController', function ($scope, $route, $routeParams, $location, $timeout) {
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
+    })
+    .config(function ($routeProvider, $locationProvider) {
+        $routeProvider
+            .when('/:subject', {})
+            .when('/:subject/:articleId', {});
+
+        // configure html5 to get links working on jsfiddle
+        $locationProvider.html5Mode({
+            enabled: true,
+            requireBase: false
+        });
     });
 
-//.service(function ($routeProvider, $locationProvider) {
-//    $routeProvider
-//        .when('/ng-board/article/:articleId', {
-//            templateUrl: 'html/article.html',
-//            controller: 'articleController',
-//            resolve: {
-//                // I will cause a 1 second delay
-//                delay: function ($q, $timeout) {
-//                    var delay = $q.defer();
-//                    $timeout(delay.resolve, 1000);
-//                    return delay.promise;
-//                }
-//            }
-//        });
-//
-//    $locationProvider.html5Mode(true);
-//});
+app.findScope = function (selector) {
+    return angular.element(document.querySelector(selector)).scope();
+};
+

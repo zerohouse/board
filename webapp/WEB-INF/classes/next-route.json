@@ -1,8 +1,10 @@
 {
   "basePackage": "",
   "mappings": [
-    "/api/*",
-    "*.page"
+    "/",
+    "!*.html",
+    "!*.js",
+    "!*.css"
   ],
   "url": "localhost:8080",
   "jspPath": "/WEB-INF/jsp/"

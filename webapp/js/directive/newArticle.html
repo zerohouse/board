@@ -1,0 +1,10 @@
+<div ng-show="user.logged">
+    <input ng-model="article.title">
+    <textarea ng-model="article.body"></textarea>
+
+    <div ng-click="save()">저장</div>
+</div>
+
+<div ng-show="!user.logged">
+    로그인 후 글 작성 가능합니다.
+</div>

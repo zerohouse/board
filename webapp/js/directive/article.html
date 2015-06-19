@@ -1,0 +1,17 @@
+<div ng-show="!updateState">
+    <h2>{{article.title}}</h2>
+    <span>{{article.body}}</span>
+
+    <div ng-show="hasRight()" ng-click="update()">수정</div>
+</div>
+<div>{{article.date}}</div>
+<div ng-show="updateState">
+    <input ng-model="article.title">
+    <textarea ng-model="article.body"></textarea>
+
+    <div ng-click="updateDone()">수정완료</div>
+</div>
+<div>{{article.date}}</div>
+<div>{{article.author}}</div>
+<div ng-show="hasRight()" ng-click="delete()">삭제</div>
+
