@@ -2,6 +2,10 @@ app.controller('boardController', function ($scope, $req, $routeParams, $timeout
     $timeout(function () {
         $scope.subject = $routeParams.subject;
         $req("/api/post", {subject: $routeParams.subject}).success(function (response) {
+            if (response == null) {
+                $scope.titles = [];
+                return;
+            }
             $scope.titles = response;
 
         });

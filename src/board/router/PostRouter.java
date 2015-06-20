@@ -4,6 +4,7 @@ import java.util.List;
 
 import next.bind.annotation.Bind;
 import next.jdbc.mysql.DAO;
+import next.jdbc.mysql.Transaction;
 import next.route.Methods;
 import next.route.annotation.Router;
 import next.route.annotation.When;
@@ -21,9 +22,13 @@ public class PostRouter {
 	DAO dao;
 
 	@When(method = Methods.POST)
-	public boolean writePost(Post post, @SessionAttr @Require(SessionNullException.class) User user) {
+	public Object writePost(Post post, @SessionAttr @Require(SessionNullException.class) User user) {
 		post.setWriter(user.getEmail());
-		return dao.insert(post);
+		DAO dao = new DAO(new Transaction());
+		dao.insert(post);
+		Object id = dao.getRecordAsList("select last_insert_id()").get(0);
+		dao.close();
+		return id;
 	}
 
 	@When(method = Methods.PUT)

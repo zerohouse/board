@@ -76,6 +76,8 @@ app.directive('article', function () {
                 return $routeParams.articleId;
             }, function () {
                 $req("/api/post", {id: $routeParams.articleId}).success(function (response) {
+                    if (response == null)
+                        return;
                     $scope.article = response[0];
                 });
             });
@@ -106,6 +108,7 @@ app.directive('newArticle', function () {
                     angular.copy($scope.article, article);
                     article.date = new Date().getString();
                     article.writer = $user.email;
+                    article.id = response;
                     $scope.titles.push(article);
                 });
             };
@@ -180,6 +183,10 @@ app.controller('boardController', function ($scope, $req, $routeParams, $timeout
     $timeout(function () {
         $scope.subject = $routeParams.subject;
         $req("/api/post", {subject: $routeParams.subject}).success(function (response) {
+            if (response == null) {
+                $scope.titles = [];
+                return;
+            }
             $scope.titles = response;
 
         });

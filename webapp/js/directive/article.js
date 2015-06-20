@@ -36,6 +36,8 @@ app.directive('article', function () {
                 return $routeParams.articleId;
             }, function () {
                 $req("/api/post", {id: $routeParams.articleId}).success(function (response) {
+                    if (response == null)
+                        return;
                     $scope.article = response[0];
                 });
             });

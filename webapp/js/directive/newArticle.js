@@ -22,6 +22,7 @@ app.directive('newArticle', function () {
                     angular.copy($scope.article, article);
                     article.date = new Date().getString();
                     article.writer = $user.email;
+                    article.id = response;
                     $scope.titles.push(article);
                 });
             };
