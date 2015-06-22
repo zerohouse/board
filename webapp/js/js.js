@@ -14,6 +14,12 @@ Array.prototype.contains = function (obj) {
     return false;
 };
 
+Array.prototype.addAll = function (array) {
+    for (var i = 0; i < array.length; i++) {
+        this.push(array[i]);
+    }
+};
+
 var app = angular.module('board', ['ngRoute'])
 
     .controller('mainController', function ($scope, $route, $routeParams, $location, $timeout) {
@@ -72,13 +78,17 @@ app.directive('article', function () {
                 return $user.email == $scope.article.writer;
             };
 
+
             $scope.$watch(function () {
                 return $routeParams.articleId;
             }, function () {
+                if ($routeParams.articleId == undefined) return;
                 $req("/api/post", {id: $routeParams.articleId}).success(function (response) {
-                    if (response == null)
+                    if (response == null) {
+                        $scope.article = undefined;
                         return;
-                    $scope.article = response[0];
+                    }
+                    $scope.article = response;
                 });
             });
         }
@@ -109,11 +119,59 @@ app.directive('newArticle', function () {
                     article.date = new Date().getString();
                     article.writer = $user.email;
                     article.id = response;
+                    if ($scope.titles == undefined)
+                        $scope.titles = [];
                     $scope.titles.push(article);
                 });
             };
         }
     };
+});
+app.directive('textarea', function () {
+    return {
+        restrict: 'E',
+        link: function (scope, element, attributes) {
+            var minHeight = element[0].offsetHeight,
+                paddingLeft = element.css('paddingLeft'),
+                paddingRight = element.css('paddingRight');
+
+            var $shadow = angular.element('<div></div>').css({
+                position: 'absolute',
+                top: 0,
+                opacity: 0,
+                width: element[0].offsetWidth - parseInt(paddingLeft || 0) - parseInt(paddingRight || 0),
+                fontSize: element.css('fontSize'),
+                fontFamily: element.css('fontFamily'),
+                lineHeight: element.css('lineHeight'),
+                resize: 'none'
+            });
+            angular.element(document.body).append($shadow);
+
+            var update = function () {
+                var times = function (string, number) {
+                    for (var i = 0, r = ''; i < number; i++) {
+                        r += string;
+                    }
+                    return r;
+                };
+
+                var val = element.val().replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/&/g, '&amp;')
+                    .replace(/\n$/, '<br/>&nbsp;')
+                    .replace(/\n/g, '<br/>')
+                    .replace(/\s{2,}/g, function (space) {
+                        return times('&nbsp;', space.length - 1) + ' '
+                    });
+                $shadow.html(val);
+
+                element.css('height', Math.max($shadow[0].offsetHeight + 10 /* the "threshold" */, minHeight) + 'px');
+            };
+
+            element.bind('keyup keydown keypress change', update);
+            update();
+        }
+    }
 });
 app.directive('title', function () {
     return {
@@ -180,17 +238,45 @@ app.service('$user', function ($req) {
 });
 
 app.controller('boardController', function ($scope, $req, $routeParams, $timeout) {
-    $timeout(function () {
-        $scope.subject = $routeParams.subject;
-        $req("/api/post", {subject: $routeParams.subject}).success(function (response) {
+
+
+    $scope.$watch(function () {
+        return $routeParams.subject;
+    }, function () {
+        $scope.refresh();
+    });
+
+    $scope.getPosts = function () {
+        if ($scope.info.end) {
+            alert("포스트가 없습니다.");
+            return;
+        }
+        $scope.info.start = $scope.info.page * $scope.info.size;
+        $req("/api/post/list", $scope.info).success(function (response) {
             if (response == null) {
-                $scope.titles = [];
+                $scope.info.end = true;
                 return;
             }
-            $scope.titles = response;
-
+            $scope.info.page++;
+            $scope.titles.addAll(response);
         });
-    });
+    };
+
+
+    $scope.refresh = function () {
+        if ($routeParams.subject == undefined)
+            return;
+        $scope.info = {};
+        $scope.info.subject = $routeParams.subject;
+        $scope.info.end = false;
+        $scope.info.page = 0;
+        $scope.titles = [];
+        if ($scope.info.size == undefined)
+            $scope.info.size = 5;
+        $scope.getPosts();
+    };
+
+    $scope.refresh();
 
     $scope.delete = function (id) {
         var index = findIndex(id);
@@ -216,6 +302,17 @@ app.controller('boardController', function ($scope, $req, $routeParams, $timeout
 
 
 });
+/**
+ * Created by dev on 2015-06-21.
+ */
+app.controller('headerController', function ($scope, $routeParams) {
+    $scope.$watch(function () {
+        return $routeParams.subject;
+    }, function () {
+        $scope.subject = $routeParams.subject;
+    });
+});
+
 app.controller('loginController', function ($scope, $req, $user) {
 
     $scope.user = $user;
@@ -250,6 +347,85 @@ app.controller('loginController', function ($scope, $req, $user) {
             }
             alert('회원가입 실패!');
         });
+    };
+
+});
+app.controller('searchController', function ($scope, $req, $location) {
+
+    $scope.results = [];
+
+    $scope.$watch('keyword', function () {
+        if ($scope.keyword == "") {
+            $scope.results = [];
+            return;
+        }
+        if ($scope.keyword == undefined) {
+            return;
+        }
+        $req('/api/search', {keyword: $scope.keyword}).success(function (response) {
+            if (response == null) {
+                $scope.results = [];
+                return;
+            }
+            $scope.results = response;
+        });
+    });
+
+    function Result(subject, count) {
+        this.subject = subject;
+        this.count = count;
+    }
+
+    $scope.$watch(function () {
+        return $scope.results;
+    }, function () {
+        if ($scope.keyword == undefined || $scope.keyword == "")
+            return;
+        $scope.select = 0;
+        for (var i = 0; i < $scope.results.length; i++) {
+            if ($scope.results[i].subject == $scope.keyword)
+                return;
+        }
+        $scope.results.push(new Result($scope.keyword, 0));
+    });
+
+    $scope.isSelected = function (each) {
+        return $scope.results.indexOf(each) == $scope.select;
+    };
+
+    $scope.sel = function (each) {
+        $scope.select = $scope.results.indexOf(each);
+    };
+
+    $scope.movePage = function (result) {
+        $location.path(result.subject);
+        $scope.keyword = "";
+    };
+
+    $scope.move = function (e) {
+        if ($scope.results.length == 0)
+            return;
+        switch (e.keyCode) {
+            case 13:
+                if ($scope.results[$scope.select] == undefined)
+                    return;
+                $scope.movePage($scope.results[$scope.select]);
+                return;
+            case 38:
+                if ($scope.select == 0) {
+                    $scope.select = $scope.results.length - 1;
+                    return;
+                }
+                $scope.select--;
+                return;
+            case 40:
+                if ($scope.select == $scope.results.length - 1) {
+                    $scope.select = 0;
+                    return;
+                }
+                $scope.select++;
+                return;
+        }
     };
 
 });

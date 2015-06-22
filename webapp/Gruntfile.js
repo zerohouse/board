@@ -34,8 +34,6 @@ module.exports = function (grunt) {
             },
             all: {
                 src: [
-                    "library/skeleton/normalize.css",
-                    "library/skeleton/skeleton.css",
                     "css/**/*.css",
                     "!css/css.css"
                 ],

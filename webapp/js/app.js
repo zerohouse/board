@@ -14,6 +14,12 @@ Array.prototype.contains = function (obj) {
     return false;
 };
 
+Array.prototype.addAll = function (array) {
+    for (var i = 0; i < array.length; i++) {
+        this.push(array[i]);
+    }
+};
+
 var app = angular.module('board', ['ngRoute'])
 
     .controller('mainController', function ($scope, $route, $routeParams, $location, $timeout) {

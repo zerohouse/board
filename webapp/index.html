@@ -3,37 +3,78 @@
 <head lang="ko">
     <meta charset="UTF-8">
     <title>board</title>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap-theme.css">
     <link rel="stylesheet" href="/css/css.css">
 </head>
 <body ng-app="board">
-<div ng-controller="loginController">
-    <div ng-show="!user.logged">
-        <input type="text" ng-model="user.email"/>
-        <input type="password" ng-model="user.password" />
-
-        <div ng-click="login()">로그인</div>
-        <div ng-click="register()">회원가입</div>
+<header class="navbar navbar-static-top" ng-controller="headerController">
+    <div class="container">
+        <div class="navbar-header">
+            <div class="navbar-brand">{{subject}}</div>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a>즐겨찾기</a></li>
+                <li><a>인기검색어</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a>로그아웃</a></li>
+            </ul>
+        </div>
     </div>
-    <div ng-show="user.logged">
-        {{user.email}}
-        <div ng-click="logout()">로그아웃</div>
+</header>
+
+
+<div class="container" ng-controller="searchController">
+    <div class="input-group">
+        <input ng-model="keyword" ng-keydown="move($event)" class="form-control" type="text">
+        <span class="input-group-addon">검색</span>
     </div>
-</div>
-
-
-<div ng-controller="boardController">
-    <h1>{{subject}}</h1>
-    <ul>
-        <li ng-repeat="title in titles" title="title"></li>
+    <ul class="list-group">
+        <li ng-class="{'active':isSelected(result)}" ng-mouseover="sel(result)"
+            ng-click="movePage(result)" ng-repeat="result in results" class="list-group-item">
+            {{result.subject}}
+            <span class="badge">{{result.count}}</span>
+        </li>
     </ul>
-    <article></article>
-    <new-article titles='titles'></new-article>
+
+
 </div>
 
+<div class="container" ng-controller="boardController">
+    <article></article>
+
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="title in titles" title="title"></li>
+        <li class="list-group-item" ng-click="getPosts();" ng-show="!info.end">더보기</li>
+    </ul>
+
+    <new-article titles='titles'></new-article>
+
+</div>
+
+
+<div class="container">
+    <div ng-controller="loginController">
+        <div ng-show="!user.logged">
+            <input type="text" ng-model="user.email"/>
+            <input type="password" ng-model="user.password"/>
+
+            <div ng-click="login()">로그인</div>
+            <div ng-click="register()">회원가입</div>
+        </div>
+        <div ng-show="user.logged">
+            {{user.email}}
+            <div ng-click="logout()">로그아웃</div>
+        </div>
+    </div>
+</div>
 
 <div ng-controller="mainController">
     <div ng-view></div>
 </div>
+
 <script src="/node_modules/angular/angular.min.js"></script>
 <script src="/node_modules/angular-route/angular-route.min.js"></script>
 <script src="/js/js.js"></script>

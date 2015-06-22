@@ -1,17 +1,23 @@
-<div ng-show="!updateState">
-    <h2>{{article.title}}</h2>
-    <span>{{article.body}}</span>
+<div class="bs-callout bs-callout-default" ng-show="article != undefined">
+    <div ng-show="!updateState">
+        <h4>{{article.title}}</h4>
+        <span>{{article.body}}</span>
 
-    <div ng-show="hasRight()" ng-click="update()">수정</div>
+        <div ng-show="hasRight()" ng-click="update()">수정</div>
+    </div>
+    <div ng-show="updateState">
+        <input ng-model="article.title">
+        <textarea ng-model="article.body"></textarea>
+
+        <div ng-click="updateDone()">수정완료</div>
+    </div>
+    <div>{{article.date}}</div>
+    <div>{{article.author}}</div>
+    <div ng-show="hasRight()" ng-click="delete()">삭제</div>
+
+    <ul class="list-group">
+        <li class="list-group-item">ㅁㄴㅁㄴㅇ</li>
+        <li class="list-group-item">ㅁㄴㅁㄴㅇ</li>
+        <li class="list-group-item">ㅁㄴㅁㄴㅇ</li>
+    </ul>
 </div>
-<div>{{article.date}}</div>
-<div ng-show="updateState">
-    <input ng-model="article.title">
-    <textarea ng-model="article.body"></textarea>
-
-    <div ng-click="updateDone()">수정완료</div>
-</div>
-<div>{{article.date}}</div>
-<div>{{article.author}}</div>
-<div ng-show="hasRight()" ng-click="delete()">삭제</div>
-

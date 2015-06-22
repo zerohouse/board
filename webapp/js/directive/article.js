@@ -32,13 +32,17 @@ app.directive('article', function () {
                 return $user.email == $scope.article.writer;
             };
 
+
             $scope.$watch(function () {
                 return $routeParams.articleId;
             }, function () {
+                if ($routeParams.articleId == undefined) return;
                 $req("/api/post", {id: $routeParams.articleId}).success(function (response) {
-                    if (response == null)
+                    if (response == null) {
+                        $scope.article = undefined;
                         return;
-                    $scope.article = response[0];
+                    }
+                    $scope.article = response;
                 });
             });
         }

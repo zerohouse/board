@@ -23,6 +23,8 @@ app.directive('newArticle', function () {
                     article.date = new Date().getString();
                     article.writer = $user.email;
                     article.id = response;
+                    if ($scope.titles == undefined)
+                        $scope.titles = [];
                     $scope.titles.push(article);
                 });
             };

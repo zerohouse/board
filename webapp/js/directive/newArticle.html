@@ -1,6 +1,13 @@
 <div ng-show="user.logged">
-    <input ng-model="article.title">
-    <textarea ng-model="article.body"></textarea>
+    <div class="input-group">
+        <span class="input-group-addon">제목</span>
+        <input class="form-control" ng-model="article.title">
+    </div>
+    <div class="input-group">
+        <span class="input-group-addon">내용</span>
+
+        <textarea auto-expand class="form-control" ng-model="article.body"></textarea>
+    </div>
 
     <div ng-click="save()">저장</div>
 </div>

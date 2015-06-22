@@ -33,17 +33,24 @@ public class PostRouter {
 
 	@When(method = Methods.PUT)
 	public boolean updatePost(Post post, @SessionAttr User user) {
-		return dao.update(post);
+		post.setWriter(user.getEmail());
+		return dao.update(post, "writer", "id");
+	}
+
+	@When(value = "/list", method = Methods.GET)
+	public List<Post> getPosts(@Require String subject, Integer start, Integer size) {
+		return dao.getSelectQuery(Post.class).select("id", "subject", "title", "writer", "date").whereField("subject").equal(subject).orderBy("id", true)
+				.limit(start, size).findList();
 	}
 
 	@When(method = Methods.GET)
-	public List<Post> getPost(Post post) {
-		return dao.findList(post);
+	public Post getPost(Post post) {
+		return dao.find(post);
 	}
 
 	@When(method = Methods.DELETE)
 	public boolean deletePost(Post post, @SessionAttr @Require(SessionNullException.class) User user) {
 		post.setWriter(user.getEmail());
-		return dao.delete(post);
+		return dao.delete(post, "id", "writer");
 	}
 }

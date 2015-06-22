@@ -1,15 +1,43 @@
 app.controller('boardController', function ($scope, $req, $routeParams, $timeout) {
-    $timeout(function () {
-        $scope.subject = $routeParams.subject;
-        $req("/api/post", {subject: $routeParams.subject}).success(function (response) {
+
+
+    $scope.$watch(function () {
+        return $routeParams.subject;
+    }, function () {
+        $scope.refresh();
+    });
+
+    $scope.getPosts = function () {
+        if ($scope.info.end) {
+            alert("포스트가 없습니다.");
+            return;
+        }
+        $scope.info.start = $scope.info.page * $scope.info.size;
+        $req("/api/post/list", $scope.info).success(function (response) {
             if (response == null) {
-                $scope.titles = [];
+                $scope.info.end = true;
                 return;
             }
-            $scope.titles = response;
-
+            $scope.info.page++;
+            $scope.titles.addAll(response);
         });
-    });
+    };
+
+
+    $scope.refresh = function () {
+        if ($routeParams.subject == undefined)
+            return;
+        $scope.info = {};
+        $scope.info.subject = $routeParams.subject;
+        $scope.info.end = false;
+        $scope.info.page = 0;
+        $scope.titles = [];
+        if ($scope.info.size == undefined)
+            $scope.info.size = 5;
+        $scope.getPosts();
+    };
+
+    $scope.refresh();
 
     $scope.delete = function (id) {
         var index = findIndex(id);
