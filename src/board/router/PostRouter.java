@@ -1,5 +1,6 @@
 package board.router;
 
+import java.util.Date;
 import java.util.List;
 
 import next.bind.annotation.Bind;
@@ -24,6 +25,7 @@ public class PostRouter {
 	@When(method = Methods.POST)
 	public Object writePost(Post post, @SessionAttr @Require(SessionNullException.class) User user) {
 		post.setWriter(user.getEmail());
+		post.setDate(new Date());
 		DAO dao = new DAO(new Transaction());
 		dao.insert(post);
 		Object id = dao.getRecordAsList("select last_insert_id()").get(0);
@@ -34,6 +36,7 @@ public class PostRouter {
 	@When(method = Methods.PUT)
 	public boolean updatePost(Post post, @SessionAttr User user) {
 		post.setWriter(user.getEmail());
+		post.setDate(new Date());
 		return dao.update(post, "writer", "id");
 	}
 

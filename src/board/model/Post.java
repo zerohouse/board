@@ -32,6 +32,10 @@ public class Post {
 		this.writer = writer;
 	}
 
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
 	public String getBody() {
 		return body;
 	}

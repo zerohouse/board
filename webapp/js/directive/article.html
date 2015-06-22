@@ -16,8 +16,10 @@
     <div ng-show="hasRight()" ng-click="delete()">삭제</div>
 
     <ul class="list-group">
-        <li class="list-group-item">ㅁㄴㅁㄴㅇ</li>
-        <li class="list-group-item">ㅁㄴㅁㄴㅇ</li>
-        <li class="list-group-item">ㅁㄴㅁㄴㅇ</li>
+        <li class="list-group-item" ng-repeat="reply in replies">{{reply}}</li>
+        <li class="list-group-item" ng-click="getReplies();" ng-show="!info.end">리플더보기</li>
     </ul>
+    <div class="input-group">
+        <input class="form-control"><span class="input-group-addon">리플달기</span>
+    </div>
 </div>

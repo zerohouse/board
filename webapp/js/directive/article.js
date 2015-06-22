@@ -33,6 +33,39 @@ app.directive('article', function () {
             };
 
 
+            $scope.refresh = function () {
+                if ($routeParams.articleId == undefined)
+                    return;
+                $scope.info = {};
+                $scope.info.postId = $routeParams.articleId;
+                $scope.info.end = false;
+                $scope.info.page = 0;
+                $scope.info.depth = 0;
+                $scope.replies = [];
+                if ($scope.info.size == undefined)
+                    $scope.info.size = 5;
+                $scope.getReplies();
+            };
+
+
+            $scope.getReplies = function () {
+                if ($scope.info.end) {
+                    alert("리플이 없습니다.");
+                    return;
+                }
+                $scope.info.start = $scope.info.page * $scope.info.size;
+                $req("/api/reply", $scope.info).success(function (response) {
+                    if (response == null) {
+                        $scope.info.end = true;
+                        return;
+                    }
+                    $scope.info.page++;
+                    $scope.replies.addAll(response);
+                });
+            };
+
+            $scope.refresh();
+
             $scope.$watch(function () {
                 return $routeParams.articleId;
             }, function () {
@@ -44,6 +77,7 @@ app.directive('article', function () {
                     }
                     $scope.article = response;
                 });
+                $scope.refresh();
             });
         }
     };

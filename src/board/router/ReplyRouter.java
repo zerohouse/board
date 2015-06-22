@@ -1,5 +1,6 @@
 package board.router;
 
+import java.util.Date;
 import java.util.List;
 
 import next.bind.annotation.Bind;
@@ -29,6 +30,7 @@ public class ReplyRouter {
 	@When(method = Methods.PUT)
 	public boolean updateReply(Reply reply, @SessionAttr User user) {
 		reply.setWriter(user.getEmail());
+		reply.setDate(new Date());
 		return dao.update(reply, "writer", "id");
 	}
 
@@ -41,6 +43,7 @@ public class ReplyRouter {
 	@When(method = Methods.POST)
 	public boolean writeReply(Reply reply, @SessionAttr @Require(SessionNullException.class) User user) {
 		reply.setWriter(user.getEmail());
+		reply.setDate(new Date());
 		return dao.insert(reply);
 	}
 

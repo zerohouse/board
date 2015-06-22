@@ -16,8 +16,6 @@ public class Reply {
 	private String writer;
 	private String reply;
 	private Date date;
-	
-	
 
 	public void setWriter(String writer) {
 		this.writer = writer;
@@ -37,6 +35,10 @@ public class Reply {
 
 	public Integer getDepth() {
 		return depth;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 	public String getWriter() {

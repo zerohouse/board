@@ -3,6 +3,14 @@ Object.prototype.equals = function (obj) {
         return true;
 };
 
+Date.prototype.getString = function () {
+    var yyyy = this.getFullYear().toString();
+    var mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
+    var dd = this.getDate().toString();
+    return yyyy + (mm[1] ? mm : "0" + mm[0]) + (dd[1] ? dd : "0" + dd[0]); // padding
+};
+
+
 Array.prototype.contains = function (obj) {
     for (var i = 0; i < this.length; i++) {
         if (this[i] == obj)
@@ -79,6 +87,39 @@ app.directive('article', function () {
             };
 
 
+            $scope.refresh = function () {
+                if ($routeParams.articleId == undefined)
+                    return;
+                $scope.info = {};
+                $scope.info.postId = $routeParams.articleId;
+                $scope.info.end = false;
+                $scope.info.page = 0;
+                $scope.info.depth = 0;
+                $scope.replies = [];
+                if ($scope.info.size == undefined)
+                    $scope.info.size = 5;
+                $scope.getReplies();
+            };
+
+
+            $scope.getReplies = function () {
+                if ($scope.info.end) {
+                    alert("리플이 없습니다.");
+                    return;
+                }
+                $scope.info.start = $scope.info.page * $scope.info.size;
+                $req("/api/reply", $scope.info).success(function (response) {
+                    if (response == null) {
+                        $scope.info.end = true;
+                        return;
+                    }
+                    $scope.info.page++;
+                    $scope.replies.addAll(response);
+                });
+            };
+
+            $scope.refresh();
+
             $scope.$watch(function () {
                 return $routeParams.articleId;
             }, function () {
@@ -90,17 +131,11 @@ app.directive('article', function () {
                     }
                     $scope.article = response;
                 });
+                $scope.refresh();
             });
         }
     };
 });
-Date.prototype.getString = function () {
-    var yyyy = this.getFullYear().toString();
-    var mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
-    var dd = this.getDate().toString();
-    return yyyy + (mm[1] ? mm : "0" + mm[0]) + (dd[1] ? dd : "0" + dd[0]); // padding
-};
-
 app.directive('newArticle', function () {
     return {
         templateUrl: '/js/directive/newArticle.html',
@@ -116,7 +151,6 @@ app.directive('newArticle', function () {
                 $req("/api/post", $scope.article, "POST").success(function (response) {
                     var article = {};
                     angular.copy($scope.article, article);
-                    article.date = new Date().getString();
                     article.writer = $user.email;
                     article.id = response;
                     if ($scope.titles == undefined)
