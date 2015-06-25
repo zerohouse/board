@@ -16,10 +16,11 @@
     <div ng-show="hasRight()" ng-click="delete()">삭제</div>
 
     <ul class="list-group">
-        <li class="list-group-item" ng-repeat="reply in replies">{{reply}}</li>
+        <li class="list-group-item" ng-repeat="reply in replies">{{reply.writer}} {{reply.reply}} <small>{{reply.date}}</small> <span ng-click="deleteReply(reply.id)" ng-show="user.email == reply.writer">삭제</span></li>
         <li class="list-group-item" ng-click="getReplies();" ng-show="!info.end">리플더보기</li>
     </ul>
     <div class="input-group">
-        <input class="form-control"><span class="input-group-addon">리플달기</span>
+        <input class="form-control" ng-model="newReply.reply">
+        <span class="input-group-addon" ng-click="writeReply()">리플달기</span>
     </div>
 </div>

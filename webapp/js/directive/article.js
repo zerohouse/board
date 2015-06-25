@@ -5,6 +5,8 @@ app.directive('article', function () {
         scope: {},
         controller: function ($scope, $req, $routeParams, $user) {
 
+            $scope.user = $user;
+
             $scope.delete = function () {
                 $req("/api/post", {id: $routeParams.articleId}, "DELETE").success(function (response) {
                     if (!response)
@@ -45,6 +47,7 @@ app.directive('article', function () {
                 if ($scope.info.size == undefined)
                     $scope.info.size = 5;
                 $scope.getReplies();
+                $scope.newReply = {postId: $routeParams.articleId};
             };
 
 
@@ -64,7 +67,6 @@ app.directive('article', function () {
                 });
             };
 
-            $scope.refresh();
 
             $scope.$watch(function () {
                 return $routeParams.articleId;
@@ -79,6 +81,18 @@ app.directive('article', function () {
                 });
                 $scope.refresh();
             });
+
+
+            $scope.writeReply = function () {
+                $req("/api/reply", $scope.newReply, "POST").success(function (response) {
+                    $scope.replies.push(response);
+                });
+            };
+
+            $scope.deleteReply = function (id) {
+                $req("/api/reply", {id: id}, "DELETE").success(function (response) {
+                });
+            };
         }
     };
 });

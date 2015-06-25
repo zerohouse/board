@@ -11,8 +11,6 @@ public class Reply {
 	@Key(AUTO_INCREMENT = true)
 	private Integer id;
 	private Integer postId;
-	private Boolean hasChild;
-	private Integer depth;
 	private String writer;
 	private String reply;
 	private Date date;
@@ -27,14 +25,6 @@ public class Reply {
 
 	public Integer getPostId() {
 		return postId;
-	}
-
-	public Boolean getHasChild() {
-		return hasChild;
-	}
-
-	public Integer getDepth() {
-		return depth;
 	}
 
 	public void setDate(Date date) {
@@ -52,5 +42,10 @@ public class Reply {
 	public Date getDate() {
 		return date;
 	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 
 }
