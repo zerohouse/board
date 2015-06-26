@@ -42,7 +42,7 @@ public class PostRouter {
 
 	@When(value = "/list", method = Methods.GET)
 	public List<Post> getPosts(@Require String subject, Integer start, Integer size) {
-		return dao.getSelectQuery(Post.class).select("id", "subject", "title", "writer", "date").whereField("subject").equal(subject).orderBy("id", true)
+		return dao.getSelectQuery(Post.class).select("id", "subject", "title", "writer", "date").field("subject").equal(subject).orderBy("id", true)
 				.limit(start, size).findList();
 	}
 

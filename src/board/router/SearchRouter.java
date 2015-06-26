@@ -20,6 +20,6 @@ public class SearchRouter {
 	@When(method = Methods.GET)
 	public List<Map<String, Object>> searchBoard(String keyword) {
 		return dao.getSelectQuery(Post.class).select("subject").select("count(*) as count").orderBy("count", true).limit(0, 3).groupBy("subject")
-				.whereField("subject").like(keyword).asMapList();
+				.field("subject").like(keyword).asMapList();
 	}
 }

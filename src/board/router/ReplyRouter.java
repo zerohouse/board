@@ -24,7 +24,7 @@ public class ReplyRouter {
 
 	@When(method = Methods.GET)
 	public List<Reply> getReplies(Integer postId, Integer depth, Integer start, Integer size) {
-		return dao.getSelectQuery(Reply.class).select("*").whereField("postId").equal(postId).orderBy("id", true).limit(start, size).findList();
+		return dao.getSelectQuery(Reply.class).select("*").field("postId").equal(postId).orderBy("id", true).limit(start, size).findList();
 	}
 
 	@When(method = Methods.PUT)

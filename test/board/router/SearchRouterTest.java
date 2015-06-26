@@ -12,7 +12,7 @@ public class SearchRouterTest {
 	public void test() {
 		DAO dao = new DAO();
 		System.out.println(dao.getSelectQuery(Post.class).select("subject").select("count(*) as count").orderBy("count", true).limit(0, 3).groupBy("subject")
-				.whereField("subject").like("1234").asMapList());
+				.field("subject").like("1234").asMapList());
 	}
 
 	@Test
