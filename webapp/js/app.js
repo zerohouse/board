@@ -30,7 +30,7 @@ Array.prototype.addAll = function (array) {
 
 var app = angular.module('board', ['ngRoute', 'ngAnimate'])
 
-    .controller('mainController', function ($scope, $route, $routeParams, $location, $timeout) {
+    .controller('mainController', function ($scope, $route, $routeParams, $location) {
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;

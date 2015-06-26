@@ -8,8 +8,8 @@ app.directive('newArticle', function () {
         controller: function ($scope, $req, $routeParams, $user) {
             $scope.user = $user;
             $scope.article = {};
-            $scope.article.subject = $routeParams.subject;
             $scope.save = function () {
+                $scope.article.subject = $routeParams.subject;
                 $req("/api/post", $scope.article, "POST").success(function (response) {
                     var article = {};
                     angular.copy($scope.article, article);

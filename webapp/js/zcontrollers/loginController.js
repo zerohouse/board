@@ -1,8 +1,12 @@
-app.controller('loginController', function ($scope, $req, $user) {
+app.controller('loginController', function ($scope, $req, $user, $regex) {
 
     $scope.user = $user;
 
     $scope.login = function () {
+        if (!$regex('user')) {
+            alert('조건이 안맞음');
+            return;
+        }
         $req("/api/user/login", $user, "POST").success(function (response) {
             if (response) {
                 alert('로그인 성공!');
@@ -33,5 +37,6 @@ app.controller('loginController', function ($scope, $req, $user) {
             alert('회원가입 실패!');
         });
     };
+
 
 });

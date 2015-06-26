@@ -58,9 +58,11 @@
 <div class="container">
     <div ng-controller="loginController">
         <div ng-show="!user.logged">
-            <input class="form-control" regex="\w+@\w+?\.\w{1,4}$" message="이메일 형식이 맞지않습니다." type="text"
+            <input class="form-control" placeholder="email" check="user" regex="\w+@\w+?\.\w{1,4}$"
+                   message="이메일 형식이 맞지않습니다." type="text"
                    ng-model="user.email"/>
-            <input class="form-control" regex=".{6,}" message="패스워드는 6자 이상입니다." type="password"
+            <input class="form-control" placeholder="password" check="user" regex=".{6,}" message="패스워드는 6자 이상입니다."
+                   type="password"
                    ng-model="user.password"/>
 
             <div ng-click="login()">로그인</div>

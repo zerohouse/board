@@ -1,4 +1,4 @@
-app.controller('searchController', function ($scope, $req, $location) {
+app.controller('searchController', function ($scope, $req, $location, $routeParams) {
 
     $scope.results = [];
 
