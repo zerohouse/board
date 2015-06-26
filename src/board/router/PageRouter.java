@@ -6,7 +6,7 @@ import next.route.annotation.When;
 @Router
 public class PageRouter {
 
-	@When("/*")
+	@When({ "/*", "/*/*" })
 	public String reponse() {
 		return "forward:/index.html";
 	}

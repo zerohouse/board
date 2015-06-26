@@ -48,6 +48,7 @@ public class ReplyRouter {
 		dao.insert(reply);
 		Object id = dao.getRecordAsList("select last_insert_id()").get(0);
 		reply.setId(Integer.parseInt(id.toString()));
+		dao.close();
 		return reply;
 	}
 

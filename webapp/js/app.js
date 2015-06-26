@@ -28,7 +28,7 @@ Array.prototype.addAll = function (array) {
     }
 };
 
-var app = angular.module('board', ['ngRoute'])
+var app = angular.module('board', ['ngRoute', 'ngAnimate'])
 
     .controller('mainController', function ($scope, $route, $routeParams, $location, $timeout) {
         $scope.$route = $route;
@@ -38,7 +38,8 @@ var app = angular.module('board', ['ngRoute'])
     .config(function ($routeProvider, $locationProvider) {
         $routeProvider
             .when('/:subject', {})
-            .when('/:subject/:articleId', {});
+            .when('/:subject/:articleId', {}).
+            when('/page/register', {});
 
         // configure html5 to get links working on jsfiddle
         $locationProvider.html5Mode({

@@ -2,3 +2,7 @@ textarea {
     overflow: hidden;
     resize: none;
 }
+
+.block {
+    display: block;
+}

@@ -6,8 +6,11 @@
   "dependencies": {
     "angular": "^1.4.0",
     "angular-route": "^1.4.0",
+    "angular-animate": "^1.4.0",
     "bootstrap": "^3.3.5",
-    "jquery": "^2.1.4"
+    "jquery": "^2.1.4",
+    "angular-ui-router": "^0.2.14",
+    "font-awesome": "^4.3.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

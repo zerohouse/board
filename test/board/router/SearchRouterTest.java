@@ -5,7 +5,6 @@ import next.jdbc.mysql.DAO;
 import org.junit.Test;
 
 import board.model.Post;
-import board.model.User;
 
 public class SearchRouterTest {
 
@@ -18,7 +17,6 @@ public class SearchRouterTest {
 
 	@Test
 	public void test2() {
-		DAO dao = new DAO();
-		dao.delete(new User(), "email", "password");
+		System.out.println("한글".matches("([a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]+)"));
 	}
 }
